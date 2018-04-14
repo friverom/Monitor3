@@ -72,6 +72,8 @@ public class Gmail {
             props.put("mail.smtp.host", smtpHost);
             props.put("mail.smtp.port", "587");
             props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.timeout", "10000");    
+            props.put("mail.smtp.connectiontimeout", "10000");    
             props.put("mail.smtp.starttls.required", "true");
 
             java.security.Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
@@ -112,6 +114,8 @@ public class Gmail {
         properties.put("mail.smtp.port", "587");
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.required", "true");
+        properties.put("mail.smtp.timeout", "10000");    
+        properties.put("mail.smtp.connectiontimeout", "10000");    
         Session emailSession = Session.getDefaultInstance(properties);
   
       //create the POP3 store object and connect with the pop server
