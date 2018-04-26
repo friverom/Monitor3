@@ -8,6 +8,7 @@ package modules;
 import Common.DataArray;
 import Comunicatioms.EmailMessage;
 import Comunicatioms.Gmail;
+import Comunicatioms.RD3mail;
 import Comunicatioms.WhatsappSender;
 import RPI_IO_Lib.RPI_IO;
 import java.text.SimpleDateFormat;
@@ -47,7 +48,7 @@ public class AirCondition {
     static int runState=0; //Auto/Man state
     static boolean schedule_flag=false;
     
-    Gmail gmail = new Gmail("svmi.radar@gmail.com", "svmi1234");
+    RD3mail rd3email = new RD3mail("svmi.radar@adr3group.com", "$radar.2018*");
     boolean email_flag = false;
     EmailMessage email=new EmailMessage();
     
@@ -161,8 +162,16 @@ public class AirCondition {
                     message=message+"\nAC system Reset. AC#1 Running.\nActual Room Temp is ";
                     temp=String.format("%.2f%n", temperature.average(60));
                     System.out.println(message+temp);
-                    if(email_flag)
-                        gmail.sendEmail(email,message+temp);
+                    if(email_flag){
+                        rd3email.sendEmail(email,message+temp);
+                    try {
+                            whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "AC system RESET");
+                            whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "AC#1 RUNNING");
+                            whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Actual Room Temp is "+String.format("%.2f", temperature.average(60)));
+                        } catch (Exception ex) {
+                            Logger.getLogger(Intrusion.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
                     reset=message+temp;
                     break;
                     
@@ -173,8 +182,16 @@ public class AirCondition {
                     message=message+"\nAC system Reset. AC#2 Running.\nActual Room Temp is ";
                     temp=String.format("%.2f%n", temperature.average(60));
                     System.out.println(message+temp);
-                    if(email_flag)
-                        gmail.sendEmail(email,message+temp);
+                    if(email_flag){
+                        rd3email.sendEmail(email,message+temp);
+                    try {
+                            whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "AC system RESET");
+                            whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "AC#2 RUNNING");
+                            whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Actual Room Temp is "+String.format("%.2f", temperature.average(60)));
+                        } catch (Exception ex) {
+                            Logger.getLogger(Intrusion.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
                     reset=message+temp;
                     break;
                     
@@ -213,7 +230,7 @@ public class AirCondition {
         @Override
         public void run() {
              try {
-            email.setFrom(new InternetAddress("svmi.radar@gmail.com"));
+            email.setFrom(new InternetAddress("svmi.radar@adr3group.com"));
             email.setTo(InternetAddress.parse("federico.rivero.m@gmail.com"));
             email.setSubject("SVMI. Radar Station Air Condition");
         } catch (AddressException ex) {
@@ -264,7 +281,7 @@ public class AirCondition {
                     String temp=String.format("%.2f%n", temperature.average(60));
                     System.out.println(message+temp);
                     if(email_flag){
-                        gmail.sendEmail(email,message+temp);
+                        rd3email.sendEmail(email,message+temp);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "AC#2 running by schedule.");
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Actual Room Temp is "+String.format("%.2f", temperature.average(60)));
@@ -281,7 +298,7 @@ public class AirCondition {
                     String temp=String.format("%.2f%n", temperature.average(60));
                     System.out.println(message+temp);
                     if(email_flag){
-                        gmail.sendEmail(email,message+temp);
+                        rd3email.sendEmail(email,message+temp);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "AC#1 ALARM. Switched to AC#2");
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Actual Room Temp is "+String.format("%.2f", temperature.average(60)));
@@ -302,7 +319,7 @@ public class AirCondition {
                     String temp=String.format("%.2f%n", temperature.average(60));
                     System.out.println(message+temp);
                     if(email_flag){
-                        gmail.sendEmail(email,message+temp);
+                        rd3email.sendEmail(email,message+temp);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "AC#1 running by schedule");
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Actual Room Temp is "+String.format("%.2f", temperature.average(60)));
@@ -319,7 +336,7 @@ public class AirCondition {
                     String temp=String.format("%.2f%n", temperature.average(60));
                     System.out.println(message+temp);
                     if(email_flag){
-                        gmail.sendEmail(email,message+temp);
+                        rd3email.sendEmail(email,message+temp);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","AC#2 ALARM. Switched to AC#1" );
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Actual Room Temp is "+String.format("%.2f", temperature.average(60)));
@@ -340,7 +357,7 @@ public class AirCondition {
                     String temp=String.format("%.2f%n", temperature.average(60));
                     System.out.println(message+temp);
                     if(email_flag){
-                        gmail.sendEmail(email,message+temp);
+                        rd3email.sendEmail(email,message+temp);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "AC System ALARM RESET. AC#1 Running");
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Actual Room Temp is "+String.format("%.2f", temperature.average(60)));
@@ -361,7 +378,7 @@ public class AirCondition {
                     String temp=String.format("%.2f%n", temperature.average(60));
                     System.out.println(message+temp);
                     if(email_flag){
-                        gmail.sendEmail(email,message+temp);
+                        rd3email.sendEmail(email,message+temp);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "AC System ALARM RESET. AC#2 Running");
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Actual Room Temp is "+String.format("%.2f", temperature.average(60)));
@@ -430,7 +447,7 @@ public class AirCondition {
                 String temp = String.format("%.2f%n", temperature.average(60));
                 System.out.println(message+temp);
                 if(email_flag){
-                    gmail.sendEmail(email,message+temp);
+                    rd3email.sendEmail(email,message+temp);
                     try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Radar Room Temperature ALARM");
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Actual Room Temp is "+String.format("%.2f", temperature.average(60)));
@@ -449,7 +466,7 @@ public class AirCondition {
                 String temp = String.format("%.2f%n",temperature.average(60));
                 System.out.println(message+temp);
                 if(email_flag){
-                    gmail.sendEmail(email,message+temp);
+                    rd3email.sendEmail(email,message+temp);
                     try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Radar Room Temperature NORMAL");
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Actual Room Temp is "+String.format("%.2f", temperature.average(60)));

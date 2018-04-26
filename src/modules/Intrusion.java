@@ -8,6 +8,7 @@ package modules;
 import Common.PulseOutput;
 import Comunicatioms.EmailMessage;
 import Comunicatioms.Gmail;
+import Comunicatioms.RD3mail;
 import Comunicatioms.WhatsappSender;
 import RPI_IO_Lib.RPI_IO;
 import java.util.Calendar;
@@ -32,7 +33,7 @@ public class Intrusion {
     int outputRly=0; //first RPI board output port
     int[] outputList=new int[2]; // List of outputs
     int timer=0; // timer to turn off lights in minutes
-    Gmail gmail = new Gmail("svmi.radar@gmail.com","svmi1234");
+    RD3mail rd3email = new RD3mail("svmi.radar@adr3group.com","$radar.2018*");
     boolean email_flag=false;
     
     WhatsappSender whatsup = new WhatsappSender();
@@ -131,7 +132,7 @@ public class Intrusion {
         System.out.println("Intrusion task started. OK");
 
         try {
-            email.setFrom(new InternetAddress("svmi.radar@gmail.com"));
+            email.setFrom(new InternetAddress("svmi.radar@adr3group.com"));
             email.setTo(InternetAddress.parse("federico.rivero.m@gmail.com"));
             email.setSubject("SVMI. Radar Station Intrusion");
         } catch (AddressException ex) {
@@ -189,7 +190,7 @@ public class Intrusion {
                     rpio.setRly(intrusionAlarm);
                     if (email_flag == true) {
                         // vars.email.setMessage("Radar Room door opened.");
-                        gmail.sendEmail(email,email.getActualDate()+"\nRadar Room door opened.");
+                        rd3email.sendEmail(email,email.getActualDate()+"\nRadar Room door opened.");
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Radar Room Door OPEN");
                         } catch (Exception ex) {
@@ -202,7 +203,7 @@ public class Intrusion {
                     rpio.setRly(intrusionAlarm);
                     if (email_flag == true) {
                      //   vars.email.setMessage("Generator Room door opened.");
-                        gmail.sendEmail(email,email.getActualDate()+"\nGenerator Room door opened.");
+                        rd3email.sendEmail(email,email.getActualDate()+"\nGenerator Room door opened.");
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Generator Room Door OPEN");
                         } catch (Exception ex) {
@@ -219,7 +220,7 @@ public class Intrusion {
                    rpio.resetRly(intrusionAlarm);
                    if (email_flag == true) {
                     //   vars.email.setMessage("Radar Room door closed.");
-                       gmail.sendEmail(email,email.getActualDate()+"\nRadar Room door closed.");
+                       rd3email.sendEmail(email,email.getActualDate()+"\nRadar Room door closed.");
                        try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Radar Room CLOSE");
                         } catch (Exception ex) {
@@ -232,7 +233,7 @@ public class Intrusion {
                    rpio.setRly(intrusionAlarm);
                    if (email_flag == true) {
                      //  vars.email.setMessage("Generator Room door opened.");
-                       gmail.sendEmail(email,email.getActualDate()+"\nGenerator Room door opened.");
+                       rd3email.sendEmail(email,email.getActualDate()+"\nGenerator Room door opened.");
                        try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Generator Room Door OPEN");
                         } catch (Exception ex) {
@@ -249,7 +250,7 @@ public class Intrusion {
                   rpio.resetRly(intrusionAlarm);
                     if (email_flag == true) {
                       //  vars.email.setMessage("Generator Room door closed.");
-                        gmail.sendEmail(email,email.getActualDate()+"\nGenerator Room door closed.");
+                        rd3email.sendEmail(email,email.getActualDate()+"\nGenerator Room door closed.");
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Generator Room Door CLOSE");
                         } catch (Exception ex) {
@@ -262,7 +263,7 @@ public class Intrusion {
                     rpio.setRly(intrusionAlarm);
                     if (email_flag == true) {
                       //  vars.email.setMessage("Radar Room door opened.");
-                        gmail.sendEmail(email,email.getActualDate()+"\nRadar Room door opened.");
+                        rd3email.sendEmail(email,email.getActualDate()+"\nRadar Room door opened.");
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Radar Room OPEN");
                         } catch (Exception ex) {
@@ -278,7 +279,7 @@ public class Intrusion {
                 if(rpio.getInput(mainDoor)){
                     if (email_flag == true) {
                      //   vars.email.setMessage("Radar Room door closed.");
-                        gmail.sendEmail(email,email.getActualDate()+"\nRadar Room door closed.");
+                        rd3email.sendEmail(email,email.getActualDate()+"\nRadar Room door closed.");
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Radar Room CLOSE");
                         } catch (Exception ex) {
@@ -290,7 +291,7 @@ public class Intrusion {
                 } else if(rpio.getInput(generatorDoor)){
                     if (email_flag == true) {
                      //   vars.email.setMessage("Generator Room Door closed.");
-                        gmail.sendEmail(email,email.getActualDate()+"\nGenerator Room Door closed.");
+                        rd3email.sendEmail(email,email.getActualDate()+"\nGenerator Room Door closed.");
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Generator Room Door CLOSE");
                         } catch (Exception ex) {

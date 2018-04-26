@@ -36,19 +36,21 @@ import javax.mail.search.FlagTerm;
  *
  * @author Federico
  */
-public class Gmail {
+public class RD3mail {
 
-    private String smtpHost = "smtp.gmail.com";
-    private String pop3Host = "pop.gmail.com";
+ //   private String smtpHost = "smtp.gmail.com";
+ //   private String pop3Host = "pop.gmail.com";
+    private String smtpHost = "mail.adr3group.com";
+    private String pop3Host = "mail.adr3group.com";
     private String storeType="pop3";
     private String user = null;
     private String pass = null;
     private boolean sessionDebug = false;
 
-    public Gmail(){
+    public RD3mail(){
     
     }
-    public Gmail(String user, String pass){
+    public RD3mail(String user, String pass){
         this.user=user;
         this.pass=pass;
     
@@ -68,15 +70,19 @@ public class Gmail {
             Properties props = System.getProperties();
             props.put("mail.pop3.host", pop3Host);
             props.put("mail.pop3.port", "995");
-            props.put("mail.pop3.starttls.enable", "true");
+            props.put("mail.pop3.ssl.enable","true");
+         //   props.put("mail.pop3.starttls.enable", "true");
 
-            props.put("mail.smtp.starttls.enable", "true");
+         //   props.put("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.host", smtpHost);
-            props.put("mail.smtp.port", "587");
+            props.put("mail.smtp.port", "465");
             props.put("mail.smtp.auth", "true");
             props.put("mail.smtp.timeout", "120000");    
             props.put("mail.smtp.connectiontimeout", "120000");    
-            props.put("mail.smtp.starttls.required", "true");
+          //  props.put("mail.smtp.starttls.required", "true");
+            props.put("mail.smtp.ssl.enable","true");
+         //   props.put("mail.user",user);
+         //   props.put("mail.password",pass);
 
             java.security.Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
 
@@ -109,17 +115,21 @@ public class Gmail {
             //create properties field
             Properties properties = new Properties();
             
-            properties.put("mail.pop3.host", pop3Host);
+           properties.put("mail.pop3.host", pop3Host);
             properties.put("mail.pop3.port", "995");
-            properties.put("mail.pop3.starttls.enable", "true");
-            
-            properties.put("mail.smtp.starttls.enable", "true");
+            properties.put("mail.pop3.ssl.enable","true");
+         //   properties.put("mail.pop3.starttls.enable", "true");
+
+         //   props.put("mail.smtp.starttls.enable", "true");
             properties.put("mail.smtp.host", smtpHost);
-            properties.put("mail.smtp.port", "587");
+            properties.put("mail.smtp.port", "465");
             properties.put("mail.smtp.auth", "true");
-            properties.put("mail.smtp.starttls.required", "true");
-            properties.put("mail.smtp.timeout", "120000");
-            properties.put("mail.smtp.connectiontimeout", "120000");
+           properties.put("mail.smtp.timeout", "120000");    
+            properties.put("mail.smtp.connectiontimeout", "120000");    
+          //  properties.put("mail.smtp.starttls.required", "true");
+            properties.put("mail.smtp.ssl.enable","true");
+         //   props.put("mail.user",user);
+         //   props.put("mail.password",pass);
             Session emailSession = Session.getDefaultInstance(properties);
             emailSession.setDebug(sessionDebug);
             //create the POP3 store object and connect with the pop server
@@ -128,7 +138,7 @@ public class Gmail {
             try {
                 store.connect(pop3Host, user, pass);
             } catch (MessagingException ex) {
-                Logger.getLogger(Gmail.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(RD3mail.class.getName()).log(Level.SEVERE, null, ex);
                 store.close();
                 return -1;
             }
@@ -158,7 +168,7 @@ public class Gmail {
             
             
         } catch (MessagingException ex) {
-            Logger.getLogger(Gmail.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RD3mail.class.getName()).log(Level.SEVERE, null, ex);
             return -2;
         }
      

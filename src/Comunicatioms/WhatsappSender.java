@@ -16,8 +16,8 @@ public class WhatsappSender {
     private static final String INSTANCE_ID = "15";
     private static final String CLIENT_ID = "friverom@gmail.com";
     private static final String CLIENT_SECRET = "5987e0a07c6d443aa5b3a62d1ed2fb9d";
-  //  private static final String WA_GATEWAY_URL = "http://api.whatsmate.net/v3/whatsapp/single/text/message/" + INSTANCE_ID;
-    private static final String WA_GATEWAY_URL = "http://api.whatsmate.net/v3/whatsapp/group/text/message/" + INSTANCE_ID;
+    private static final String WA_GATEWAY_URL1 = "http://api.whatsmate.net/v3/whatsapp/single/text/message/" + INSTANCE_ID;
+    private static final String WA_GATEWAY_URL2 = "http://api.whatsmate.net/v3/whatsapp/group/text/message/" + INSTANCE_ID;
     
    
     /**
@@ -38,7 +38,7 @@ public class WhatsappSender {
                 .append("}")
                 .toString();
 
-        URL url = new URL(WA_GATEWAY_URL);
+        URL url = new URL(WA_GATEWAY_URL1);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setDoOutput(true);
         conn.setRequestMethod("POST");
@@ -52,15 +52,16 @@ public class WhatsappSender {
         os.close();
 
         int statusCode = conn.getResponseCode();
-        System.out.println("Response from WA Gateway: \n");
-        System.out.println("Status Code: " + statusCode);
+      /*  System.out.println("Response from WA Gateway: \n");
+        System.out.println("Status Code: " + statusCode); */
         BufferedReader br = new BufferedReader(new InputStreamReader(
                 (statusCode == 200) ? conn.getInputStream() : conn.getErrorStream()
         ));
 
         String output;
         while ((output = br.readLine()) != null) {
-            System.out.println(output);
+          //  System.out.println(output);
+          output=output;
         }
         conn.disconnect();
     }
@@ -89,7 +90,7 @@ public class WhatsappSender {
       .append("}")
       .toString();
 
-    URL url = new URL(WA_GATEWAY_URL);
+    URL url = new URL(WA_GATEWAY_URL2);
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     conn.setDoOutput(true);
     conn.setRequestMethod("POST");
@@ -104,15 +105,16 @@ public class WhatsappSender {
 
     int statusCode = conn.getResponseCode();
 
-    System.out.println("Response from WA Gateway: \n");
-    System.out.println("Status Code: " + statusCode);
+   /* System.out.println("Response from WA Gateway: \n");
+    System.out.println("Status Code: " + statusCode);*/
 
     BufferedReader br = new BufferedReader(new InputStreamReader(
         (statusCode == 200) ? conn.getInputStream() : conn.getErrorStream()
       ));
     String output;
     while ((output = br.readLine()) != null) {
-        System.out.println(output);
+      //  System.out.println(output);
+      output=output;
     }
     conn.disconnect();
   }

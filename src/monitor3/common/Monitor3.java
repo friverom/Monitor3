@@ -6,6 +6,7 @@
 package monitor3.common;
 
 import Common.DataArray;
+import Common.ResetPi;
 import RPI_IO_Lib.RPI_IO;
 import java.util.Calendar;
 import java.util.logging.Level;
@@ -14,8 +15,11 @@ import modules.Intrusion;
 import Common.SunsetCalculator;
 import Comunicatioms.EmailMessage;
 import Comunicatioms.Gmail;
+import Comunicatioms.RD3mail;
+import java.io.IOException;
 import java.util.ArrayList;
 import javax.mail.MessagingException;
+import javax.mail.NoSuchProviderException;
 import modules.AirCondition;
 import modules.AirConditionScheduler;
 import modules.Energy;
@@ -33,14 +37,15 @@ public class Monitor3 {
     static ExteriorLights lights = null;
     static AirCondition aircondition = null;
     static Energy energy = null;
-    static Gmail gmail = new Gmail("svmi.radar@gmail.com", "svmi1234");
+    static ResetPi reset = null;
+    static RD3mail rd3email = new RD3mail("svmi.radar@adr3group.com", "$radar.2018*");
                 
     static EmailMessage message = new EmailMessage();
     static ArrayList<EmailMessage> emailList = new ArrayList<EmailMessage>();
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws InterruptedException, MessagingException {
+    public static void main(String[] args) throws InterruptedException {
 
         rpio = new RPI_IO();
         data = new RPI_IO_DATA();
@@ -48,7 +53,9 @@ public class Monitor3 {
         lights = new ExteriorLights(rpio);
         aircondition = new AirCondition(rpio);
         energy = new Energy(rpio);
+        reset = new ResetPi(rpio);
 
+        rpio.out_off();
         //Intrusion module sett up
         intrusion.setInputNumber(2); //Input doors to be monitor
         intrusion.setInputPort(1);  //RPI Board Input port
@@ -75,7 +82,7 @@ public class Monitor3 {
         aircondition.setOutputCount(3);
         aircondition.setRC_const(0.61);
         aircondition.setAlarm(26.0);
-        aircondition.setSchedule(AirConditionScheduler.HOUR, 6);
+        aircondition.setSchedule(AirConditionScheduler.DAY, 1);
         aircondition.setEmailFlag(true);
         aircondition.start();
 
@@ -85,31 +92,49 @@ public class Monitor3 {
         energy.setEmailFlag(true);
         energy.start(1000);
         //   System.out.println("Report:\n"+energy.getReport());
+        
+        //Reset Monitor
+        reset.setInput1(4);
+        reset.setInput2(5);
+        reset.start(1000);
+        
+         int connect_status=0;
+                 
+        while (true) {
 
-         while(true){
-           gmail.checkEmail(emailList);
-        //   System.out.println("Email count "+emailList.size());
+            rpio.out_on();
+            try {
+                connect_status = rd3email.checkEmail(emailList);
+            } catch (NoSuchProviderException ex) {
+                Logger.getLogger(Monitor3.class.getName()).log(Level.SEVERE, null, ex);
+                rpio.blink_1Hz();
+            }
+
+            //   System.out.println("Email count "+emailList.size());
             String subject;
             String request;
-           for(int i=0; i < emailList.size(); i++){
-                message =(EmailMessage) emailList.get(i);
-            /*    System.out.println("Email "+i);
+            if (connect_status == 0) {
+                for (int i = 0; i < emailList.size(); i++) {
+                    message = (EmailMessage) emailList.get(i);
+                    /*    System.out.println("Email "+i);
                 System.out.println("From: "+message.getFrom());
                 System.out.println("To: "+message.getTo()[0]);*/
-                subject=message.getSubject();
-                request=getRequest(subject);
-                message.setReply();
-                gmail.sendEmail(message, request);
-                
-                
-           }
-           emailList.clear();
+                    subject = message.getSubject();
+                    request = getRequest(subject);
+                    message.setReply();
+                    rd3email.sendEmail(message, request);
+                    emailList.clear();
+
+                }
+                rpio.out_off();
+            }
+
             try {
-                Thread.sleep(60000);
+                Thread.sleep(5000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Monitor3.class.getName()).log(Level.SEVERE, null, ex);
             }
-            }    
+        }
     }
     
     public static String getRequest(String subject){
@@ -119,6 +144,7 @@ public class Monitor3 {
         
         switch(subject){
             case "status":
+            case "estado":
                 request=request+intrusion.getReport()+"\n";
                 request=request+lights.getReport()+"\n";
                 request=request+energy.getReport()+"\n";
@@ -126,6 +152,7 @@ public class Monitor3 {
                 break;
                 
             case "temperature":
+            case "temp":
                 request=request+"Actual room temperature:\n"+aircondition.getTemperature();
                 break;
                 
@@ -137,6 +164,21 @@ public class Monitor3 {
                 request=lights.getSunData();
                 break;
                 
+            case "lights on":
+                lights.lightON();
+                break;
+                
+            case "lights off":
+                lights.lightOFF();
+                break;
+                
+            case "system reset":
+                reset.resetCommand();
+                break;
+                
+            case "system shutdown":
+                reset.shutDownCommand();
+                break;
             default:
                 request="Comando invalido";
                 

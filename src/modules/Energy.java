@@ -7,6 +7,7 @@ package modules;
 
 import Comunicatioms.EmailMessage;
 import Comunicatioms.Gmail;
+import Comunicatioms.RD3mail;
 import Comunicatioms.WhatsappSender;
 import RPI_IO_Lib.RPI_IO;
 import java.util.logging.Level;
@@ -26,7 +27,7 @@ public class Energy {
     int[] inputList=null;   //List of inputs
     int timer = 0; //Sample period in millis.
     
-    Gmail gmail = new Gmail("svmi.radar@gmail.com", "svmi1234");
+    RD3mail rd3email = new RD3mail("svmi.radar@adr3group.com", "$radar.2018*");
     EmailMessage email=new EmailMessage();
     boolean email_flag = false;
     
@@ -124,7 +125,7 @@ public class Energy {
         @Override
         public void run() {
            try {
-            email.setFrom(new InternetAddress("svmi.radar@gmail.com"));
+            email.setFrom(new InternetAddress("svmi.radar@adr3group.com"));
             email.setTo(InternetAddress.parse("federico.rivero.m@gmail.com"));
             email.setSubject("SVMI. Radar Station Power Supply");
         } catch (AddressException ex) {
@@ -155,7 +156,7 @@ public class Energy {
                     message=message+"\nMain Power Supply OFF";
                     System.out.println(message);
                     if(this.email_flag){
-                        gmail.sendEmail(email, message);
+                        rd3email.sendEmail(email, message);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Main Power OFF");
                         } catch (Exception ex) {
@@ -172,7 +173,7 @@ public class Energy {
                     message=message+"\nMain Power Supply ON";
                     System.out.println(message);
                     if(this.email_flag){
-                        gmail.sendEmail(email, message);
+                        rd3email.sendEmail(email, message);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Main Power ON");
                         } catch (Exception ex) {
@@ -195,7 +196,7 @@ public class Energy {
                     message = message + "\nGenerator Supply ON";
                     System.out.println(message);
                     if(this.email_flag){
-                        gmail.sendEmail(email, message);
+                        rd3email.sendEmail(email, message);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Generator RUNNING");
                         } catch (Exception ex) {
@@ -212,7 +213,7 @@ public class Energy {
                     message = message + "\nGenerator Supply OFF";
                     System.out.println(message);
                     if(this.email_flag){
-                        gmail.sendEmail(email, message);
+                        rd3email.sendEmail(email, message);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Generator STOP");
                         } catch (Exception ex) {
@@ -234,7 +235,7 @@ public class Energy {
                     message = message + "\nSurge Protector FAIL.\nSurge Protection INOPERATIVE";
                     System.out.println(message);
                     if(this.email_flag){
-                        gmail.sendEmail(email, message);
+                        rd3email.sendEmail(email, message);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Surge Protection INOPERATIVE");
                         } catch (Exception ex) {
@@ -251,7 +252,7 @@ public class Energy {
                     message = message + "\nSurge Protection ACTIVE";
                     System.out.println(message);
                     if(this.email_flag){
-                        gmail.sendEmail(email, message);
+                        rd3email.sendEmail(email, message);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Surge Protection ACTIVE");
                         } catch (Exception ex) {
