@@ -487,8 +487,8 @@ public class AirCondition {
         
         //double analog=(double)value/4096*5;
         //double temp=18.752*analog-36.616;
-        double analog=(double)value/4096*25.0;
-        double temp=4.6888*analog-54.877;
+        double analog=(double)value/4096*4.096;
+        double temp=22.965*analog-41.427;
        // System.out.format("Temp %.2f%n", temp);
         return temp;
     }

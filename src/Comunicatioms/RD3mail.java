@@ -115,7 +115,7 @@ public class RD3mail {
             //create properties field
             Properties properties = new Properties();
             
-           properties.put("mail.pop3.host", pop3Host);
+            properties.put("mail.pop3.host", pop3Host);
             properties.put("mail.pop3.port", "995");
             properties.put("mail.pop3.ssl.enable","true");
          //   properties.put("mail.pop3.starttls.enable", "true");
@@ -124,7 +124,7 @@ public class RD3mail {
             properties.put("mail.smtp.host", smtpHost);
             properties.put("mail.smtp.port", "465");
             properties.put("mail.smtp.auth", "true");
-           properties.put("mail.smtp.timeout", "120000");    
+            properties.put("mail.smtp.timeout", "120000");    
             properties.put("mail.smtp.connectiontimeout", "120000");    
           //  properties.put("mail.smtp.starttls.required", "true");
             properties.put("mail.smtp.ssl.enable","true");
