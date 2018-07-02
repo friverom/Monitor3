@@ -26,7 +26,7 @@ import modules.Energy;
 import modules.ExteriorLights;
 
 /**
- *
+ * Version 1.11
  * @author Federico
  */
 public class Monitor3 {
@@ -139,7 +139,8 @@ public class Monitor3 {
     
     public static String getRequest(String subject){
         
-        String request=message.getActualDate()+"\n\n";
+        String request=message.getActualDate()+"\n";
+        request=request+"Monitor3 Version 1.11\n\n";
         subject=subject.toLowerCase();
         
         switch(subject){
@@ -179,6 +180,19 @@ public class Monitor3 {
             case "system shutdown":
                 reset.shutDownCommand();
                 break;
+                
+            case "alarm off": 
+                intrusion.setEmail_flag(false);
+                break;
+                
+            case "alarm on":
+                intrusion.setEmail_flag(true);
+                break;
+                
+            case "version":
+                request="Monitor3 version 1.11";
+                break;
+                
             default:
                 request="Comando invalido";
                 

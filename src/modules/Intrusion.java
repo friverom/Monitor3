@@ -113,6 +113,12 @@ public class Intrusion {
             report=report+"Generator Room Door: CLOSE\n";
         }
         
+        if(email_flag){
+            report=report+"Alarm ENABLE\n";
+        } else {
+            report=report+"Alarm DISABLE\n";
+        }
+        
         return report;
     }
     /**

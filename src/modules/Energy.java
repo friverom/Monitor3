@@ -194,6 +194,7 @@ public class Energy {
                     genState = 1;
                     String message = email.getActualDate();
                     message = message + "\nGenerator Supply ON";
+                    rpio.setRly(1);
                     System.out.println(message);
                     if(this.email_flag){
                         rd3email.sendEmail(email, message);
@@ -212,6 +213,7 @@ public class Energy {
                     String message = email.getActualDate();
                     message = message + "\nGenerator Supply OFF";
                     System.out.println(message);
+                    rpio.resetRly(1);
                     if(this.email_flag){
                         rd3email.sendEmail(email, message);
                         try {
