@@ -10,6 +10,8 @@ import Comunicatioms.Gmail;
 import Comunicatioms.RD3mail;
 import Comunicatioms.WhatsappSender;
 import RPI_IO_Lib.RPI_IO;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.internet.AddressException;
@@ -37,12 +39,23 @@ public class Energy {
     private int genState=0;
     private int surgeState=0;
     
+    private Date date_period=null;
+    private long mains_start_time=0;
+    private long mains_down_time=0;
+    private int mains_loss_counter=0;
+    
+    private long gen_start_time=0;
+    private long gen_alive_time=0;
+    private int gen_start_counter=0;
    /**
     * Class Constructor
     * @param rpio 
     */ 
     public Energy(RPI_IO rpio){
         this.rpio=rpio;
+        this.mains_start_time=System.currentTimeMillis();
+        date_period=new Date();
+        
     }
 
     public void setInput(int input) {
@@ -79,24 +92,48 @@ public class Energy {
         this.timer = timer;
     }
     
+    public String reset_power() {
+        date_period=new Date();
+        mains_start_time=System.currentTimeMillis();
+        mains_down_time=0;
+        mains_loss_counter=0;
+        gen_alive_time=0;
+        gen_start_counter=0;
+        
+        String resp="Reset command executed.";
+        return resp;
+    }
+    
     public String getReport(){
         String report="";
+        SimpleDateFormat ft = 
+        new SimpleDateFormat ("dd/MM/yyyy  HH:mm");
+        Date date=new Date();
         
         if(mainState==0)
             report=report+"Main Power: ON\n";
         else
             report=report+"Main Power: OFF\n";
-        
+              
         if(genState==0)
             report=report+"Generator: STOP\n";
         else
             report=report+"Generator: RUNNING\n";
         
         if(surgeState==0)
-            report=report+"Surge Protection: ACTIVE\n";
+            report=report+"Surge Protection: ACTIVE\n\n";
         else
-            report=report+"Surge Protection: DISCONNECTED\n";
-             
+            report=report+"Surge Protection: DISCONNECTED\n\n";
+        
+        String mains=String.format("%.1f", mains_down_time/(1000.0*3600.0));
+        String gen=String.format("%.1f",gen_alive_time/(1000.0*3600.0));
+        
+        report=report+"Period: "+ft.format(date_period)+" to "+ft.format(date);
+        report=report+"\nMain Power OFF Time: "+mains+" hrs\n";
+        report=report+"Main Power Interrupt counter: "+mains_loss_counter+"\n\n";
+        report=report+"Generator RUNNING time: "+gen+" hrs\n";
+        report=report+"Generator starts counter: "+gen_start_counter+"\n\n";
+        
         return report;
     }
     
@@ -152,11 +189,13 @@ public class Energy {
             case 0:
                 if(!rpio.getInput(inputList[0])){
                     mainState=1;
+                    mains_start_time=System.currentTimeMillis();
+                    mains_loss_counter++;
                     String message=email.getActualDate();
                     message=message+"\nMain Power Supply OFF";
                     System.out.println(message);
                     if(this.email_flag){
-                        rd3email.sendEmail(email, message);
+                      //  rd3email.sendEmail(email, message);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Main Power OFF");
                         } catch (Exception ex) {
@@ -173,7 +212,7 @@ public class Energy {
                     message=message+"\nMain Power Supply ON";
                     System.out.println(message);
                     if(this.email_flag){
-                        rd3email.sendEmail(email, message);
+                     //   rd3email.sendEmail(email, message);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Main Power ON");
                         } catch (Exception ex) {
@@ -181,6 +220,8 @@ public class Energy {
                         }
                     }
                 }
+                mains_down_time=mains_down_time+(System.currentTimeMillis()-mains_start_time);
+                mains_start_time=System.currentTimeMillis();
                 break;
             default:
         }
@@ -192,12 +233,14 @@ public class Energy {
             case 0:
                 if (rpio.getInput(inputList[1])) {
                     genState = 1;
+                    gen_start_time=System.currentTimeMillis();
+                    gen_start_counter++;
                     String message = email.getActualDate();
                     message = message + "\nGenerator Supply ON";
                     rpio.setRly(1);
                     System.out.println(message);
                     if(this.email_flag){
-                        rd3email.sendEmail(email, message);
+                     //   rd3email.sendEmail(email, message);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Generator RUNNING");
                         } catch (Exception ex) {
@@ -210,12 +253,13 @@ public class Energy {
             case 1:
                 if (!rpio.getInput(inputList[1])) {
                     genState = 0;
+                    
                     String message = email.getActualDate();
                     message = message + "\nGenerator Supply OFF";
                     System.out.println(message);
                     rpio.resetRly(1);
                     if(this.email_flag){
-                        rd3email.sendEmail(email, message);
+                     //   rd3email.sendEmail(email, message);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Generator STOP");
                         } catch (Exception ex) {
@@ -223,6 +267,8 @@ public class Energy {
                         }
                     }
                 }
+                gen_alive_time=gen_alive_time+(System.currentTimeMillis()-gen_start_time);
+                gen_start_time=System.currentTimeMillis();
                 break;
             default:
         }
@@ -237,7 +283,7 @@ public class Energy {
                     message = message + "\nSurge Protector FAIL.\nSurge Protection INOPERATIVE";
                     System.out.println(message);
                     if(this.email_flag){
-                        rd3email.sendEmail(email, message);
+                     //   rd3email.sendEmail(email, message);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Surge Protection INOPERATIVE");
                         } catch (Exception ex) {
@@ -254,7 +300,7 @@ public class Energy {
                     message = message + "\nSurge Protection ACTIVE";
                     System.out.println(message);
                     if(this.email_flag){
-                        rd3email.sendEmail(email, message);
+                      //  rd3email.sendEmail(email, message);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Surge Protection ACTIVE");
                         } catch (Exception ex) {

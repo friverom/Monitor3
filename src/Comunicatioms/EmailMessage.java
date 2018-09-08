@@ -82,7 +82,7 @@ public class EmailMessage {
     public String getActualDate() {
         Date dNow = new Date();
         SimpleDateFormat ft
-                = new SimpleDateFormat("dd/MM/yyyy 'at' HH:mm:ss zzz");
+                = new SimpleDateFormat("dd/MM/yyyy 'at' HH:mm zzz");
         String actualDate=ft.format(dNow);
         return actualDate;
     }

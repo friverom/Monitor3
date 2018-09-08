@@ -31,10 +31,15 @@ public class AirCondition {
     AirConditionScheduler schedule = new AirConditionScheduler();
    
     Calendar nextDate;
+    long start_date;
     boolean auto;
     double alarm = 0; //Alarm Temp
     double alfa = 0; // dT/(dT+RC) for filter
     boolean alarm_flag = false;
+    long ac1_timer=0;
+    long ac2_timer=0;
+    long ac1_last=0;
+    long ac2_last=0;
     
     int input = 0;    //first RPI board input port. Auto/Manual
     int inputCount = 0;    //How many inputs
@@ -57,6 +62,9 @@ public class AirCondition {
     public AirCondition(RPI_IO rpio){
         this.rpio=rpio;
         nextDate=schedule.calcScheduleTime();
+        start_date=System.currentTimeMillis();
+        ac1_last=start_date;
+        ac2_last=start_date;
     }
 
     public void setSchedule(int timer, int times){
@@ -107,7 +115,7 @@ public class AirCondition {
     public String getReport(){
         String report;
         String temp = String.format("%.2f", temperature.average(60));
-        SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy 'at' HH:mm:ss zzz");
+        SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy 'at' HH:mm zzz");
 
          if(auto){
                     report="AC System mode: AUTOMATIC\n";
@@ -146,6 +154,16 @@ public class AirCondition {
         
     }
     
+    public String runReport(){
+        String resp="";
+        SimpleDateFormat ft = new SimpleDateFormat("dd/MM/yyyy 'at' HH:mm");
+        
+            resp="Running hours since "+ft.format(start_date)+"\n";
+            resp=resp+"AC #1: "+String.format("%.1f", ac1_timer/(1000.0*3600.0))+"\n";
+            resp=resp+"AC #2: "+String.format("%.1f", ac2_timer/(1000.0*3600.0))+"\n";
+            
+        return resp;
+    }
     public String resetAC(){
         
         String reset="";
@@ -163,7 +181,7 @@ public class AirCondition {
                     temp=String.format("%.2f%n", temperature.average(60));
                     System.out.println(message+temp);
                     if(email_flag){
-                        rd3email.sendEmail(email,message+temp);
+                    //    rd3email.sendEmail(email,message+temp);
                     try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "AC system RESET");
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "AC#1 RUNNING");
@@ -183,7 +201,7 @@ public class AirCondition {
                     temp=String.format("%.2f%n", temperature.average(60));
                     System.out.println(message+temp);
                     if(email_flag){
-                        rd3email.sendEmail(email,message+temp);
+                    //    rd3email.sendEmail(email,message+temp);
                     try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "AC system RESET");
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "AC#2 RUNNING");
@@ -281,7 +299,7 @@ public class AirCondition {
                     String temp=String.format("%.2f%n", temperature.average(60));
                     System.out.println(message+temp);
                     if(email_flag){
-                        rd3email.sendEmail(email,message+temp);
+                     //   rd3email.sendEmail(email,message+temp);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "AC#2 running by schedule.");
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Actual Room Temp is "+String.format("%.2f", temperature.average(60)));
@@ -298,7 +316,7 @@ public class AirCondition {
                     String temp=String.format("%.2f%n", temperature.average(60));
                     System.out.println(message+temp);
                     if(email_flag){
-                        rd3email.sendEmail(email,message+temp);
+                    //    rd3email.sendEmail(email,message+temp);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "AC#1 ALARM. Switched to AC#2");
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Actual Room Temp is "+String.format("%.2f", temperature.average(60)));
@@ -307,6 +325,8 @@ public class AirCondition {
                         }
                     }
                 }
+                ac1_timer=ac1_timer+System.currentTimeMillis()-ac1_last;
+                ac1_last=System.currentTimeMillis();
                 break;
             //State 1. System in Auto an AC#2 running. No alarm    
             case 1:
@@ -319,7 +339,7 @@ public class AirCondition {
                     String temp=String.format("%.2f%n", temperature.average(60));
                     System.out.println(message+temp);
                     if(email_flag){
-                        rd3email.sendEmail(email,message+temp);
+                     //   rd3email.sendEmail(email,message+temp);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "AC#1 running by schedule");
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Actual Room Temp is "+String.format("%.2f", temperature.average(60)));
@@ -336,7 +356,7 @@ public class AirCondition {
                     String temp=String.format("%.2f%n", temperature.average(60));
                     System.out.println(message+temp);
                     if(email_flag){
-                        rd3email.sendEmail(email,message+temp);
+                    //    rd3email.sendEmail(email,message+temp);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","AC#2 ALARM. Switched to AC#1" );
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Actual Room Temp is "+String.format("%.2f", temperature.average(60)));
@@ -345,6 +365,8 @@ public class AirCondition {
                         }
                     }
                 }
+                ac2_timer=ac2_timer+System.currentTimeMillis()-ac2_last;
+                ac2_last=System.currentTimeMillis();
                 break;
             //AC #1 in alarm. AC #2 running. No reset signal    
             case 2:
@@ -357,7 +379,7 @@ public class AirCondition {
                     String temp=String.format("%.2f%n", temperature.average(60));
                     System.out.println(message+temp);
                     if(email_flag){
-                        rd3email.sendEmail(email,message+temp);
+                    //    rd3email.sendEmail(email,message+temp);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "AC System ALARM RESET. AC#1 Running");
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Actual Room Temp is "+String.format("%.2f", temperature.average(60)));
@@ -366,6 +388,8 @@ public class AirCondition {
                         }
                     }
                 }
+                ac2_timer=ac2_timer+System.currentTimeMillis()-ac2_last;
+                ac2_last=System.currentTimeMillis();
                 break;
                 
             case 3:
@@ -378,7 +402,7 @@ public class AirCondition {
                     String temp=String.format("%.2f%n", temperature.average(60));
                     System.out.println(message+temp);
                     if(email_flag){
-                        rd3email.sendEmail(email,message+temp);
+                     //   rd3email.sendEmail(email,message+temp);
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "AC System ALARM RESET. AC#2 Running");
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Actual Room Temp is "+String.format("%.2f", temperature.average(60)));
@@ -387,6 +411,8 @@ public class AirCondition {
                         }
                     }
                 }
+                ac1_timer=ac1_timer+System.currentTimeMillis()-ac1_last;
+                ac1_last=System.currentTimeMillis();
                 break;
             default:
         }
@@ -447,7 +473,7 @@ public class AirCondition {
                 String temp = String.format("%.2f%n", temperature.average(60));
                 System.out.println(message+temp);
                 if(email_flag){
-                    rd3email.sendEmail(email,message+temp);
+                //    rd3email.sendEmail(email,message+temp);
                     try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Radar Room Temperature ALARM");
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Actual Room Temp is "+String.format("%.2f", temperature.average(60)));
@@ -466,7 +492,7 @@ public class AirCondition {
                 String temp = String.format("%.2f%n",temperature.average(60));
                 System.out.println(message+temp);
                 if(email_flag){
-                    rd3email.sendEmail(email,message+temp);
+                 //   rd3email.sendEmail(email,message+temp);
                     try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Radar Room Temperature NORMAL");
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Actual Room Temp is "+String.format("%.2f", temperature.average(60)));

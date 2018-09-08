@@ -92,7 +92,7 @@ public class ExteriorLights {
     }
     
     public String getSunData() {
-        SimpleDateFormat format1 = new SimpleDateFormat("HH:mm:ss zzz");
+        SimpleDateFormat format1 = new SimpleDateFormat("HH:mm zzz");
         
         Calendar date = Calendar.getInstance();
         Calendar set = calc.getSunset(date);
@@ -135,7 +135,7 @@ public class ExteriorLights {
         rpio.setRly(outputList[0]);
         if (email_flag == true) {
             //   data.email.setMessage("Platform lights ON.");
-            rd3email.sendEmail(email, email.getActualDate() + "\nPlatform lights ON.");
+           // rd3email.sendEmail(email, email.getActualDate() + "\nPlatform lights ON.");
             try {
                 whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Platform lights ON");
             } catch (Exception ex) {
@@ -151,7 +151,7 @@ public class ExteriorLights {
         rpio.resetRly(outputList[0]);
         if (email_flag == true) {
             //   data.email.setMessage("Platform lights ON.");
-            rd3email.sendEmail(email, email.getActualDate() + "\nPlatform lights OFF.");
+          //  rd3email.sendEmail(email, email.getActualDate() + "\nPlatform lights OFF.");
             try {
                 whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "Platform lights OFF");
             } catch (Exception ex) {
@@ -221,7 +221,7 @@ public class ExteriorLights {
                     obst_state = 1;
                     if (email_flag == true) {
                        // data.email.setMessage("Obstruction lights ON.");
-                        rd3email.sendEmail(email,email.getActualDate()+"\nObstruction lights ON.");
+                      //  rd3email.sendEmail(email,email.getActualDate()+"\nObstruction lights ON.");
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Obstruction Lights ON");
                         } catch (Exception ex) {
@@ -247,7 +247,7 @@ public class ExteriorLights {
                     plat_state=0;
                     if (email_flag == true) {
                      //   data.email.setMessage("Obstruction lights and Platform lights OFF.");
-                        rd3email.sendEmail(email,email.getActualDate()+"\nObstruction lights and Platform lights OFF.");
+                     //   rd3email.sendEmail(email,email.getActualDate()+"\nObstruction lights and Platform lights OFF.");
                         try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Obstrction and Platform lights OFF");
                         } catch (Exception ex) {
@@ -274,7 +274,7 @@ public class ExteriorLights {
                         rpio.setRly(outputList[0]);
                         if (email_flag == true) {
                          //   data.email.setMessage("Platform lights ON.");
-                            rd3email.sendEmail(email,email.getActualDate()+"\nPlatform lights ON.");
+                         //   rd3email.sendEmail(email,email.getActualDate()+"\nPlatform lights ON.");
                             try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Platform lights ON");
                         } catch (Exception ex) {
@@ -297,7 +297,7 @@ public class ExteriorLights {
                         rpio.resetRly(outputList[0]);
                         if (email_flag == true) {
                           //  data.email.setMessage("Platform lights OFF.");
-                            rd3email.sendEmail(email,email.getActualDate()+"\nPlatform lights OFF.");
+                          //  rd3email.sendEmail(email,email.getActualDate()+"\nPlatform lights OFF.");
                             try {
                             whatsup.sendGroupMessage("+584241184923", "Radar SVMI","Platform lights OFF");
                         } catch (Exception ex) {
