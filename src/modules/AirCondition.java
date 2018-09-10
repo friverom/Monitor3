@@ -38,9 +38,8 @@ public class AirCondition {
     boolean alarm_flag = false;
     long ac1_timer=0;
     long ac2_timer=0;
-    long ac1_last=0;
-    long ac2_last=0;
-    
+    long ac_last=0;
+       
     int input = 0;    //first RPI board input port. Auto/Manual
     int inputCount = 0;    //How many inputs
     int[] inputList=null;   //List of inputs
@@ -63,8 +62,8 @@ public class AirCondition {
         this.rpio=rpio;
         nextDate=schedule.calcScheduleTime();
         start_date=System.currentTimeMillis();
-        ac1_last=start_date;
-        ac2_last=start_date;
+        ac_last=start_date;
+       
     }
 
     public void setSchedule(int timer, int times){
@@ -325,8 +324,8 @@ public class AirCondition {
                         }
                     }
                 }
-                ac1_timer=ac1_timer+System.currentTimeMillis()-ac1_last;
-                ac1_last=System.currentTimeMillis();
+                ac1_timer=ac1_timer+System.currentTimeMillis()-ac_last;
+                ac_last=System.currentTimeMillis();
                 break;
             //State 1. System in Auto an AC#2 running. No alarm    
             case 1:
@@ -365,8 +364,8 @@ public class AirCondition {
                         }
                     }
                 }
-                ac2_timer=ac2_timer+System.currentTimeMillis()-ac2_last;
-                ac2_last=System.currentTimeMillis();
+                ac2_timer=ac2_timer+System.currentTimeMillis()-ac_last;
+                ac_last=System.currentTimeMillis();
                 break;
             //AC #1 in alarm. AC #2 running. No reset signal    
             case 2:
@@ -388,8 +387,8 @@ public class AirCondition {
                         }
                     }
                 }
-                ac2_timer=ac2_timer+System.currentTimeMillis()-ac2_last;
-                ac2_last=System.currentTimeMillis();
+                ac2_timer=ac2_timer+System.currentTimeMillis()-ac_last;
+                ac_last=System.currentTimeMillis();
                 break;
                 
             case 3:
@@ -411,8 +410,8 @@ public class AirCondition {
                         }
                     }
                 }
-                ac1_timer=ac1_timer+System.currentTimeMillis()-ac1_last;
-                ac1_last=System.currentTimeMillis();
+                ac1_timer=ac1_timer+System.currentTimeMillis()-ac_last;
+                ac_last=System.currentTimeMillis();
                 break;
             default:
         }

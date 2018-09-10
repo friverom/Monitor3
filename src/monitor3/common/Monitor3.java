@@ -86,7 +86,8 @@ public class Monitor3 {
         aircondition.setOutputCount(3);
         aircondition.setRC_const(0.61);
         aircondition.setAlarm(26.0);
-        aircondition.setSchedule(AirConditionScheduler.DAY, 1);
+     //   aircondition.setSchedule(AirConditionScheduler.DAY, 1);
+        aircondition.setSchedule(AirConditionScheduler.HOUR, 1);
         aircondition.setEmailFlag(false);
         aircondition.start();
 
