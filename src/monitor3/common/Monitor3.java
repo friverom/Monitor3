@@ -42,8 +42,8 @@ public class Monitor3 {
     static AirCondition aircondition = null;
     static Energy energy = null;
     static ResetPi reset = null;
- //   static RD3mail rd3email = new RD3mail("svmi.radar@adr3group.com", "$radar.2018*");
-    static RD3mail rd3email = new RD3mail("test.adr3@adr3group.com", "test.adr3");            
+    static RD3mail rd3email = new RD3mail("svmi.radar@adr3group.com", "$radar.2018*");
+ //   static RD3mail rd3email = new RD3mail("test.adr3@adr3group.com", "test.adr3");            
     static EmailMessage message = new EmailMessage();
     static ArrayList<EmailMessage> emailList = new ArrayList<EmailMessage>();
     /**
@@ -66,7 +66,7 @@ public class Monitor3 {
         intrusion.setOutputRly(2);  //RPI first output port
         intrusion.setTimer(5);  //Timer for internal lights
         intrusion.start();  //start task
-        intrusion.setEmail_flag(false);
+        intrusion.setEmail_flag(true);
         //    System.out.println("Report:\n"+intrusion.getReport());
 
         //Exterior Lights module set up
@@ -76,7 +76,7 @@ public class Monitor3 {
         lights.setInput(3);
         lights.setOutputRly(4);
         lights.start();
-        lights.setEmailFlag(false);
+        lights.setEmailFlag(true);
         //   System.out.println("Report:\n"+lights.getReport());
 
         //Air Conditioning task
@@ -86,15 +86,15 @@ public class Monitor3 {
         aircondition.setOutputCount(3);
         aircondition.setRC_const(0.61);
         aircondition.setAlarm(26.0);
-     //   aircondition.setSchedule(AirConditionScheduler.DAY, 1);
-        aircondition.setSchedule(AirConditionScheduler.HOUR, 1);
-        aircondition.setEmailFlag(false);
+        aircondition.setSchedule(AirConditionScheduler.DAY, 1);
+      //  aircondition.setSchedule(AirConditionScheduler.HOUR, 1);
+        aircondition.setEmailFlag(true);
         aircondition.start();
 
         //Energy Task
         energy.setInput(6); //First Input port
         energy.setInputCount(3);
-        energy.setEmailFlag(false);
+        energy.setEmailFlag(true);
         energy.start(1000);
         //   System.out.println("Report:\n"+energy.getReport());
         

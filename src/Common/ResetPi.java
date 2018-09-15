@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package Common;
 
 import RPI_IO_Lib.RPI_IO;
@@ -11,6 +7,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Class to handle reboot and shutdown commands for the Raspberry Pi.
+ * Hardware reboot can be performed by selecting two digital inputs for
+ * a period longer than 7 seconds. Two methods are provided for selecting 
+ * each digital inputs.
  *
  * @author Federico
  */
@@ -21,25 +21,42 @@ public class ResetPi {
     private int in2=0;
     private int tim=0;
     
-    
+    /**
+     * Class constructor
+     * @param rpio 
+     */
     public ResetPi(RPI_IO rpio){
         this.rpio=rpio;
     }
     
+    /**
+     * Select digital input #1 
+     * @param i int between 1..8
+     */
     public void setInput1(int i){
         in1=i;
     }
-    
+    /**
+     * Select digital input #2
+     * @param i int between 1..8
+     */
     public void setInput2(int i){
         in2=i;
     }
     
+    /**
+     * Starts Reset object and runs every t seconds
+     * @param t int time in milliseconds
+     */
     public void start(int t){
         this.tim=t;
         Thread task=new Thread(new reset(),"Monitor Reset");
         task.start();
     }
     
+    /**
+     * Reboot method
+     */
     public void resetCommand() {
         Process p;
         try {
@@ -54,6 +71,9 @@ public class ResetPi {
 
     }
     
+    /**
+     * Shutdown method
+     */
     public void shutDownCommand() {
         Process p;
         try {
@@ -68,6 +88,12 @@ public class ResetPi {
 
     }
     
+    /** 
+     * Reset Inner class.
+     * Checks if in1 and in2 are set for more than 7 seconds and invokes
+     * the reboot method.
+     * Runs every "tim" seconds
+     */
     private class reset implements Runnable{
 
         @Override
