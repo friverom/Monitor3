@@ -16,7 +16,9 @@ import Common.SunsetCalculator;
 import Comunicatioms.EmailMessage;
 import Comunicatioms.Gmail;
 import Comunicatioms.RD3mail;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import javax.mail.MessagingException;
 import javax.mail.NoSuchProviderException;
@@ -42,14 +44,14 @@ public class Monitor3 {
     static AirCondition aircondition = null;
     static Energy energy = null;
     static ResetPi reset = null;
-    static RD3mail rd3email = new RD3mail("svmi.radar@adr3group.com", "$radar.2018*");
- //   static RD3mail rd3email = new RD3mail("test.adr3@adr3group.com", "test.adr3");            
+    //static RD3mail rd3email = new RD3mail("svmi.radar@adr3group.com", "$radar.2018*");
+    static RD3mail rd3email = new RD3mail("test.adr3@adr3group.com", "$test.2018*");            
     static EmailMessage message = new EmailMessage();
     static ArrayList<EmailMessage> emailList = new ArrayList<EmailMessage>();
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, FileNotFoundException, UnsupportedEncodingException {
 
         rpio = new RPI_IO();
         data = new RPI_IO_DATA();
@@ -66,7 +68,7 @@ public class Monitor3 {
         intrusion.setOutputRly(2);  //RPI first output port
         intrusion.setTimer(5);  //Timer for internal lights
         intrusion.start();  //start task
-        intrusion.setEmail_flag(true);
+        intrusion.setEmail_flag(false);
         //    System.out.println("Report:\n"+intrusion.getReport());
 
         //Exterior Lights module set up
@@ -76,7 +78,7 @@ public class Monitor3 {
         lights.setInput(3);
         lights.setOutputRly(4);
         lights.start();
-        lights.setEmailFlag(true);
+        lights.setEmailFlag(false);
         //   System.out.println("Report:\n"+lights.getReport());
 
         //Air Conditioning task
@@ -88,13 +90,13 @@ public class Monitor3 {
         aircondition.setAlarm(26.0);
         aircondition.setSchedule(AirConditionScheduler.DAY, 1);
       //  aircondition.setSchedule(AirConditionScheduler.HOUR, 1);
-        aircondition.setEmailFlag(true);
+        aircondition.setEmailFlag(false);
         aircondition.start();
 
         //Energy Task
         energy.setInput(6); //First Input port
         energy.setInputCount(3);
-        energy.setEmailFlag(true);
+        energy.setEmailFlag(false);
         energy.start(1000);
         //   System.out.println("Report:\n"+energy.getReport());
         
@@ -127,7 +129,13 @@ public class Monitor3 {
                     subject = message.getSubject();
                     request = getRequest(subject);
                     message.setReply();
-                    rd3email.sendEmail(message, request);
+                    
+                    String[] parts = request.split("/");
+                    if (parts[1].equalsIgnoreCase("home")) {
+                        rd3email.sendEmailAttach(message, "Temperature Log Data File ", request);
+                    } else {
+                        rd3email.sendEmail(message, request);
+                    }
                     emailList.clear();
 
                 }
@@ -142,7 +150,7 @@ public class Monitor3 {
         }
     }
     
-    public static String getRequest(String subject){
+    public static String getRequest(String subject) throws FileNotFoundException, UnsupportedEncodingException{
         
         String request=message.getActualDate()+"\n";
         request=request+"Monitor3 Version 1.12\n\n";
@@ -205,6 +213,18 @@ public class Monitor3 {
             
             case "reset power":
                 request=request+energy.reset_power();
+                break;
+                
+            case "temp log 1":
+                request=aircondition.getLog1();
+                break;
+                
+            case "temp log 5":
+                request=aircondition.getLog5();
+                break;
+                
+            case "temp log 60":
+                request=aircondition.getLog60();
                 break;
                 
             default:

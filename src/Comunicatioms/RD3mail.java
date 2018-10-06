@@ -17,7 +17,11 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.mail.Address;
+import javax.mail.BodyPart;
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
@@ -29,7 +33,9 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import javax.mail.search.FlagTerm;
 
 /**
@@ -64,6 +70,59 @@ public class RD3mail {
         this.pass = pass;
     }
  
+    public synchronized void sendEmailAttach(EmailMessage message, String messageText, String attachName){
+        try {
+            Properties props = System.getProperties();
+            props.put("mail.pop3.host", pop3Host);
+            props.put("mail.pop3.port", "995");
+            props.put("mail.pop3.ssl.enable","true");
+            //   props.put("mail.pop3.starttls.enable", "true");
+            
+            //   props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.host", smtpHost);
+            props.put("mail.smtp.port", "465");
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.timeout", "120000");
+            props.put("mail.smtp.connectiontimeout", "120000");
+            //  props.put("mail.smtp.starttls.required", "true");
+            props.put("mail.smtp.ssl.enable","true");
+            //   props.put("mail.user",user);
+            //   props.put("mail.password",pass);
+            
+            java.security.Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
+            
+            Session mailSession = Session.getDefaultInstance(props, null);
+            mailSession.setDebug(sessionDebug);
+            Message msg = new MimeMessage(mailSession);
+            msg.setRecipients(Message.RecipientType.TO, message.getTo());
+            msg.setFrom(message.getFrom());
+            msg.setSubject(message.getSubject());
+            
+            BodyPart messageBodyPart=new MimeBodyPart();
+            String textMessage = message.getActualDate()+"/n";
+            textMessage=textMessage+"Attached is the temperature Log File";
+            messageBodyPart.setText(messageText);
+            
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(messageBodyPart);
+            
+            messageBodyPart= new MimeBodyPart();
+            DataSource source = new FileDataSource(attachName);
+            messageBodyPart.setDataHandler(new DataHandler(source));
+            messageBodyPart.setFileName("TempLogFile.txt");
+            multipart.addBodyPart(messageBodyPart);
+            msg.setContent(multipart);
+            
+             
+            Transport transport = mailSession.getTransport("smtp");
+            transport.connect(smtpHost, user, pass);
+            transport.sendMessage(msg, msg.getAllRecipients());
+            transport.close();
+        } catch (MessagingException ex) {
+            Logger.getLogger(RD3mail.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            
+    }
     public synchronized void sendEmail(EmailMessage message, String messageText) {
         try {
 
