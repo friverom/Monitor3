@@ -103,6 +103,8 @@ public class Monitor3 {
         reset.setInput2(5);
         reset.start(1000);
         
+        
+        //Loop every 5 seconds to check for email commands.
          int connect_status=0;
                  
         while (true) {
