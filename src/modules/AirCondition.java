@@ -11,6 +11,9 @@ import Comunicatioms.Gmail;
 import Comunicatioms.RD3mail;
 import Comunicatioms.WhatsappSender;
 import RPI_IO_Lib.RPI_IO;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.logging.Level;
@@ -217,6 +220,33 @@ public class AirCondition {
             }
         }
         return reset;
+    }
+    
+    public String getLog1() throws FileNotFoundException, UnsupportedEncodingException{
+        String attach ="/home/pi/NetBeansProjects/Monitor3/dist/tempLog1.txt";
+        createTempLog(attach,1);
+        return attach;
+    }
+    
+    public String getLog5() throws FileNotFoundException, UnsupportedEncodingException{
+        String attach ="/home/pi/NetBeansProjects/Monitor3/dist/tempLog5.txt";
+        createTempLog(attach,5);
+        return attach;
+    }
+    public String getLog60() throws FileNotFoundException, UnsupportedEncodingException{
+        String attach ="/home/pi/NetBeansProjects/Monitor3/dist/tempLog60.txt";
+        createTempLog(attach,60);
+        return attach;
+    }
+    
+    private void createTempLog(String filename, int sampletime) throws FileNotFoundException, UnsupportedEncodingException{
+        
+        PrintWriter writer = new PrintWriter(filename, "UTF-8");
+        writer.format("%.2f,", avg_temp.getData(0));
+        for(int i=sampletime; i<1440; i+=sampletime){
+            writer.format("%.2f,", avg_temp.getData(i));
+        }
+        writer.close();
     }
     
      /**
