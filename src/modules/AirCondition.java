@@ -130,13 +130,13 @@ public class AirCondition {
             case 0:
                 report=report+"AC #1: RUNNING\n";
                 report=report+"Actual room temperature: "+temp+"\n";
-                report=report+"AC switchover on: "+format1.format(nextDate.getTime());
+                report=report+"AC next switchover: "+format1.format(nextDate.getTime());
                 break;
                 
             case 1:
                 report=report+"AC #2: RUNNING\n";
                 report=report+"Actual room temperature: "+temp+"\n";
-                report=report+"AC switchover on: "+format1.format(nextDate.getTime());
+                report=report+"AC next switchover: "+format1.format(nextDate.getTime());
                 break;
                 
             case 2:
@@ -239,6 +239,11 @@ public class AirCondition {
         return attach;
     }
     
+    public String alarmAck(){
+        rpio.resetRly(outputList[2]);
+        return "AC alarm Acknowledged";
+    }
+     
     private void createTempLog(String filename, int sampletime) throws FileNotFoundException, UnsupportedEncodingException{
         
         PrintWriter writer = new PrintWriter(filename, "UTF-8");
@@ -248,6 +253,8 @@ public class AirCondition {
         }
         writer.close();
     }
+    
+   
     
      /**
      * This method initializes the Input array list

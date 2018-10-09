@@ -44,10 +44,11 @@ public class Monitor3 {
     static AirCondition aircondition = null;
     static Energy energy = null;
     static ResetPi reset = null;
-    //static RD3mail rd3email = new RD3mail("svmi.radar@adr3group.com", "$radar.2018*");
-    static RD3mail rd3email = new RD3mail("test.adr3@adr3group.com", "$test.2018*");            
+    static RD3mail rd3email = new RD3mail("svmi.radar@adr3group.com", "$radar.2018*");
+    //static RD3mail rd3email = new RD3mail("test.adr3@adr3group.com", "$test.2018*");            
     static EmailMessage message = new EmailMessage();
     static ArrayList<EmailMessage> emailList = new ArrayList<EmailMessage>();
+    static boolean messageFlag=true;
     /**
      * @param args the command line arguments
      */
@@ -68,7 +69,7 @@ public class Monitor3 {
         intrusion.setOutputRly(2);  //RPI first output port
         intrusion.setTimer(5);  //Timer for internal lights
         intrusion.start();  //start task
-        intrusion.setEmail_flag(false);
+        intrusion.setEmail_flag(messageFlag);
         //    System.out.println("Report:\n"+intrusion.getReport());
 
         //Exterior Lights module set up
@@ -78,7 +79,7 @@ public class Monitor3 {
         lights.setInput(3);
         lights.setOutputRly(4);
         lights.start();
-        lights.setEmailFlag(false);
+        lights.setEmailFlag(messageFlag);
         //   System.out.println("Report:\n"+lights.getReport());
 
         //Air Conditioning task
@@ -90,13 +91,13 @@ public class Monitor3 {
         aircondition.setAlarm(26.0);
         aircondition.setSchedule(AirConditionScheduler.DAY, 1);
       //  aircondition.setSchedule(AirConditionScheduler.HOUR, 1);
-        aircondition.setEmailFlag(false);
+        aircondition.setEmailFlag(messageFlag);
         aircondition.start();
 
         //Energy Task
         energy.setInput(6); //First Input port
         energy.setInputCount(3);
-        energy.setEmailFlag(false);
+        energy.setEmailFlag(messageFlag);
         energy.start(1000);
         //   System.out.println("Report:\n"+energy.getReport());
         
@@ -155,7 +156,7 @@ public class Monitor3 {
     public static String getRequest(String subject) throws FileNotFoundException, UnsupportedEncodingException{
         
         String request=message.getActualDate()+"\n";
-        request=request+"Monitor3 Version 1.12\n\n";
+        request=request+"Monitor3 Version 1.3\n\n";
         subject=subject.toLowerCase();
         
         switch(subject){
@@ -210,7 +211,7 @@ public class Monitor3 {
                 break;
                 
             case "version":
-                request="Monitor3 version 1.12";
+                request="Monitor3 version 1.3";
                 break;
             
             case "reset power":
@@ -227,6 +228,10 @@ public class Monitor3 {
                 
             case "temp log 60":
                 request=aircondition.getLog60();
+                break;
+                
+            case "ac ack":
+                request=aircondition.alarmAck();
                 break;
                 
             default:
