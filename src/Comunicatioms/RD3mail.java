@@ -82,8 +82,8 @@ public class RD3mail {
             props.put("mail.smtp.host", smtpHost);
             props.put("mail.smtp.port", "465");
             props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.timeout", "120000");
-            props.put("mail.smtp.connectiontimeout", "120000");
+            props.put("mail.smtp.timeout", 5000);
+            props.put("mail.smtp.connectiontimeout", 5000);
             //  props.put("mail.smtp.starttls.required", "true");
             props.put("mail.smtp.ssl.enable","true");
             //   props.put("mail.user",user);
@@ -129,15 +129,15 @@ public class RD3mail {
             Properties props = System.getProperties();
             props.put("mail.pop3.host", pop3Host);
             props.put("mail.pop3.port", "995");
-            props.put("mail.pop3.ssl.enable","true");
+            props.put("mail.pop3.ssl.enable","true"); 
          //   props.put("mail.pop3.starttls.enable", "true");
 
          //   props.put("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.host", smtpHost);
             props.put("mail.smtp.port", "465");
             props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.timeout", "120000");    
-            props.put("mail.smtp.connectiontimeout", "120000");    
+            props.put("mail.smtp.timeout", 5000);    
+            props.put("mail.smtp.connectiontimeout", 5000);    
           //  props.put("mail.smtp.starttls.required", "true");
             props.put("mail.smtp.ssl.enable","true");
          //   props.put("mail.user",user);
@@ -177,14 +177,16 @@ public class RD3mail {
             properties.put("mail.pop3.host", pop3Host);
             properties.put("mail.pop3.port", "995");
             properties.put("mail.pop3.ssl.enable","true");
+            properties.put("mail.pop3.timeout",5000);
+            properties.put("mail.pop3.connectiontimeout", 5000);
          //   properties.put("mail.pop3.starttls.enable", "true");
 
          //   props.put("mail.smtp.starttls.enable", "true");
             properties.put("mail.smtp.host", smtpHost);
             properties.put("mail.smtp.port", "465");
             properties.put("mail.smtp.auth", "true");
-            properties.put("mail.smtp.timeout", "120000");    
-            properties.put("mail.smtp.connectiontimeout", "120000");    
+            properties.put("mail.smtp.timeout", 5000);    
+            properties.put("mail.smtp.connectiontimeout", 5000);    
           //  properties.put("mail.smtp.starttls.required", "true");
             properties.put("mail.smtp.ssl.enable","true");
          //   props.put("mail.user",user);
@@ -199,6 +201,7 @@ public class RD3mail {
             } catch (MessagingException ex) {
                 Logger.getLogger(RD3mail.class.getName()).log(Level.SEVERE, null, ex);
                 store.close();
+                System.out.println("POP3 connection Time out");
                 return -1;
             }
             
@@ -228,6 +231,7 @@ public class RD3mail {
             
         } catch (MessagingException ex) {
             Logger.getLogger(RD3mail.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Connection Error");
             return -2;
         }
      
