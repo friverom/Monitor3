@@ -82,8 +82,8 @@ public class RD3mail {
             props.put("mail.smtp.host", smtpHost);
             props.put("mail.smtp.port", "465");
             props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.timeout", "120000");
-            props.put("mail.smtp.connectiontimeout", "120000");
+            props.put("mail.smtp.timeout", "5000");
+            props.put("mail.smtp.connectiontimeout", "5000");
             //  props.put("mail.smtp.starttls.required", "true");
             props.put("mail.smtp.ssl.enable","true");
             //   props.put("mail.user",user);
@@ -91,7 +91,7 @@ public class RD3mail {
             
             java.security.Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
             
-            Session mailSession = Session.getDefaultInstance(props, null);
+            Session mailSession = Session.getInstance(props, null);
             mailSession.setDebug(sessionDebug);
             Message msg = new MimeMessage(mailSession);
             msg.setRecipients(Message.RecipientType.TO, message.getTo());
@@ -136,8 +136,8 @@ public class RD3mail {
             props.put("mail.smtp.host", smtpHost);
             props.put("mail.smtp.port", "465");
             props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.timeout", "120000");    
-            props.put("mail.smtp.connectiontimeout", "120000");    
+            props.put("mail.smtp.timeout", "5000");    
+            props.put("mail.smtp.connectiontimeout", "5000");    
           //  props.put("mail.smtp.starttls.required", "true");
             props.put("mail.smtp.ssl.enable","true");
          //   props.put("mail.user",user);
@@ -145,7 +145,7 @@ public class RD3mail {
 
             java.security.Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
 
-            Session mailSession = Session.getDefaultInstance(props, null);
+            Session mailSession = Session.getInstance(props, null);
             mailSession.setDebug(sessionDebug);
             Message msg = new MimeMessage(mailSession);
             msg.setRecipients(Message.RecipientType.TO, message.getTo());
@@ -177,19 +177,21 @@ public class RD3mail {
             properties.put("mail.pop3.host", pop3Host);
             properties.put("mail.pop3.port", "995");
             properties.put("mail.pop3.ssl.enable","true");
+            properties.put("mail.pop3.timeout",5000);
+           properties.put("mail.pop3.connectiontimeout",5000);
          //   properties.put("mail.pop3.starttls.enable", "true");
 
          //   props.put("mail.smtp.starttls.enable", "true");
             properties.put("mail.smtp.host", smtpHost);
             properties.put("mail.smtp.port", "465");
             properties.put("mail.smtp.auth", "true");
-            properties.put("mail.smtp.timeout", "120000");    
-            properties.put("mail.smtp.connectiontimeout", "120000");    
+            properties.put("mail.smtp.timeout", "5000");    
+            properties.put("mail.smtp.connectiontimeout", "5000");    
           //  properties.put("mail.smtp.starttls.required", "true");
             properties.put("mail.smtp.ssl.enable","true");
          //   props.put("mail.user",user);
          //   props.put("mail.password",pass);
-            Session emailSession = Session.getDefaultInstance(properties);
+            Session emailSession = Session.getInstance(properties);
             emailSession.setDebug(sessionDebug);
             //create the POP3 store object and connect with the pop server
             Store store = emailSession.getStore("pop3s");

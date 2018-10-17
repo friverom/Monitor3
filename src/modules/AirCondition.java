@@ -11,11 +11,14 @@ import Comunicatioms.Gmail;
 import Comunicatioms.RD3mail;
 import Comunicatioms.WhatsappSender;
 import RPI_IO_Lib.RPI_IO;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.internet.AddressException;
@@ -61,10 +64,15 @@ public class AirCondition {
     
     WhatsappSender whatsup=new WhatsappSender();
    
-    public AirCondition(RPI_IO rpio){
+    public AirCondition(RPI_IO rpio) throws FileNotFoundException{
+        
+        long[] log=new long[2];
         this.rpio=rpio;
         nextDate=schedule.calcScheduleTime();
-        start_date=System.currentTimeMillis();
+        log=readAClog();
+        ac1_timer=log[0];
+        ac2_timer=log[1];
+        start_date=log[2];
         ac_last=start_date;
        
     }
@@ -161,8 +169,8 @@ public class AirCondition {
         SimpleDateFormat ft = new SimpleDateFormat("dd/MM/yyyy 'at' HH:mm");
         
             resp="Running hours since "+ft.format(start_date)+"\n";
-            resp=resp+"AC #1: "+String.format("%.1f", ac1_timer/(1000.0*3600.0))+"\n";
-            resp=resp+"AC #2: "+String.format("%.1f", ac2_timer/(1000.0*3600.0))+"\n";
+            resp=resp+"AC #1: "+String.format("%.1f", ac1_timer/(1000.0*3600.0))+" hrs\n";
+            resp=resp+"AC #2: "+String.format("%.1f", ac2_timer/(1000.0*3600.0))+" hrs\n";
             
         return resp;
     }
@@ -241,6 +249,11 @@ public class AirCondition {
     
     public String alarmAck(){
         rpio.resetRly(outputList[2]);
+        try {
+            whatsup.sendGroupMessage("+584241184923", "Radar SVMI", "AC Alarm Acknowledge");
+        } catch (Exception ex) {
+            Logger.getLogger(AirCondition.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return "AC alarm Acknowledged";
     }
      
@@ -254,7 +267,45 @@ public class AirCondition {
         writer.close();
     }
     
-   
+    private void createAClog() throws FileNotFoundException, UnsupportedEncodingException{
+        PrintWriter writer = new PrintWriter("ac_log.txt", "UTF-8");
+        writer.println("Running hours,"+ac1_timer+","+ac2_timer+","+System.currentTimeMillis()+"\n");
+        writer.close();
+    }
+    
+    private long[] readAClog(){
+        Scanner scanner;
+        long[] log = new long[3];
+        log[0]=0;
+        log[1]=0;
+        log[2]=0;
+        
+        try {
+            scanner = new Scanner(new File("ac_log.txt"));
+            String text = scanner.useDelimiter("\n").next();
+            scanner.close(); // Put this call in a finally block
+
+            String[] parts = text.split(",");
+            
+            log[0] = Long.parseLong(parts[1]);
+            log[1] = Long.parseLong(parts[2]);
+            log[2] = Long.parseLong(parts[3]);
+            
+        } catch (FileNotFoundException ex) {
+            PrintWriter writer;
+            try {
+                writer = new PrintWriter("ac_log.txt", "UTF-8");
+                writer.println("Running hours," + 0 + "," + 0 + ","+System.currentTimeMillis()+"\n");
+                writer.close();
+            } catch (FileNotFoundException ex1) {
+                Logger.getLogger(AirCondition.class.getName()).log(Level.SEVERE, null, ex1);
+            } catch (UnsupportedEncodingException ex1) {
+                Logger.getLogger(AirCondition.class.getName()).log(Level.SEVERE, null, ex1);
+            }
+           
+        }
+       return log; 
+    }
     
      /**
      * This method initializes the Input array list
@@ -303,7 +354,13 @@ public class AirCondition {
                 if(state==0){
                     setAirCondition(1);
                 }
-                check_state(); //if Auto run schedule
+                try {
+                    check_state(); //if Auto run schedule
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(AirCondition.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (UnsupportedEncodingException ex) {
+                    Logger.getLogger(AirCondition.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 auto=true;
             } else {
                 state=0;
@@ -320,7 +377,7 @@ public class AirCondition {
         
     }
     
-    private void check_state(){
+    private void check_state() throws FileNotFoundException, UnsupportedEncodingException{
     
         switch(state){
         
@@ -328,6 +385,7 @@ public class AirCondition {
             case 0:
                 if (schedule_flag) {
                     setAirCondition(2);
+                    createAClog();
                     schedule_flag = false;
                     state = 1; //Switch to state 1 if schedule signal
                     String message=email.getActualDate();
@@ -346,6 +404,7 @@ public class AirCondition {
                 } else if (alarm_flag) {
                     setAirCondition(2);
                     rpio.setRly(outputList[2]);
+                    createAClog();
                     state = 2; //AC #1 in alarm switch to state 2
                     String message=email.getActualDate();
                     message=message+"\nAC#1 ALARM. Switched to AC#2.\nActual Room Temp is ";
@@ -369,6 +428,7 @@ public class AirCondition {
                 if(schedule_flag){
                     setAirCondition(1);
                     schedule_flag=false;
+                    createAClog();
                     state=0; //Switch to state 0 if schedula signal
                     String message=email.getActualDate();
                     message=message+"\nAC#1 running by schedule.\nActual Room Temp is ";
@@ -386,6 +446,7 @@ public class AirCondition {
                 }else if(alarm_flag){
                     setAirCondition(1);
                     rpio.setRly(outputList[2]);
+                    createAClog();
                     state=3; // AC #2 in alarm, switch to state 3
                     String message=email.getActualDate();
                     message=message+"\nAlarm AC#2. Switched to AC#1.\nActual Room Temp is ";
@@ -408,6 +469,7 @@ public class AirCondition {
             case 2:
                 if(rpio.getInput(inputList[1]) && !alarm_flag){
                     setAirCondition(1);
+                    createAClog();
                     rpio.resetRly(outputList[2]);
                     state=0; // Switch to state 0 if reset and no alarm present
                     String message=email.getActualDate();
@@ -426,11 +488,13 @@ public class AirCondition {
                 }
                 ac2_timer=ac2_timer+System.currentTimeMillis()-ac_last;
                 ac_last=System.currentTimeMillis();
+               
                 break;
                 
             case 3:
                 if (rpio.getInput(inputList[1]) && !alarm_flag) {
                     setAirCondition(2);
+                    createAClog();
                     rpio.resetRly(outputList[2]);
                     state = 1; // Switch to state 1 if reset and no alarm present
                     String message=email.getActualDate();
