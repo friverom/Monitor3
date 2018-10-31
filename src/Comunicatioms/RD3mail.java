@@ -109,7 +109,7 @@ public class RD3mail {
             messageBodyPart= new MimeBodyPart();
             DataSource source = new FileDataSource(attachName);
             messageBodyPart.setDataHandler(new DataHandler(source));
-            messageBodyPart.setFileName("TempLogFile.txt");
+            messageBodyPart.setFileName("LogFile.txt");
             multipart.addBodyPart(messageBodyPart);
             msg.setContent(multipart);
             
@@ -177,8 +177,8 @@ public class RD3mail {
             properties.put("mail.pop3.host", pop3Host);
             properties.put("mail.pop3.port", "995");
             properties.put("mail.pop3.ssl.enable","true");
-            properties.put("mail.pop3.timeout",5000);
-           properties.put("mail.pop3.connectiontimeout",5000);
+            properties.put("mail.pop3.timeout","5000");
+           properties.put("mail.pop3.connectiontimeout","5000");
          //   properties.put("mail.pop3.starttls.enable", "true");
 
          //   props.put("mail.smtp.starttls.enable", "true");

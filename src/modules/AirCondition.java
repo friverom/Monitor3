@@ -231,18 +231,18 @@ public class AirCondition {
     }
     
     public String getLog1() throws FileNotFoundException, UnsupportedEncodingException{
-        String attach ="/home/pi/NetBeansProjects/Monitor3/dist/tempLog1.txt";
+        String attach ="/home/pi/NetBeansProjects/Monitor3/tempLog1.txt";
         createTempLog(attach,1);
         return attach;
     }
     
     public String getLog5() throws FileNotFoundException, UnsupportedEncodingException{
-        String attach ="/home/pi/NetBeansProjects/Monitor3/dist/tempLog5.txt";
+        String attach ="/home/pi/NetBeansProjects/Monitor3/tempLog5.txt";
         createTempLog(attach,5);
         return attach;
     }
     public String getLog60() throws FileNotFoundException, UnsupportedEncodingException{
-        String attach ="/home/pi/NetBeansProjects/Monitor3/dist/tempLog60.txt";
+        String attach ="/home/pi/NetBeansProjects/Monitor3/tempLog60.txt";
         createTempLog(attach,60);
         return attach;
     }

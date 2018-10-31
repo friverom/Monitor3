@@ -26,6 +26,7 @@ import modules.AirCondition;
 import modules.AirConditionScheduler;
 import modules.Energy;
 import modules.ExteriorLights;
+import modules.IntrusionAlarm;
 
 /**
  * Version 1.11
@@ -39,16 +40,16 @@ public class Monitor3 {
 
     static RPI_IO rpio = null;
     static RPI_IO_DATA data = null;
-    static Intrusion intrusion = null;
+    static IntrusionAlarm intrusion = null;
     static ExteriorLights lights = null;
     static AirCondition aircondition = null;
     static Energy energy = null;
     static ResetPi reset = null;
-    static RD3mail rd3email = new RD3mail("svmi.radar@adr3group.com", "$radar.2018*");
-    //static RD3mail rd3email = new RD3mail("test.adr3@adr3group.com", "$test.2018*");            
+    //static RD3mail rd3email = new RD3mail("svmi.radar@adr3group.com", "$radar.2018*");
+    static RD3mail rd3email = new RD3mail("test.adr3@adr3group.com", "$test.2018*");            
     static EmailMessage message = new EmailMessage();
     static ArrayList<EmailMessage> emailList = new ArrayList<EmailMessage>();
-    static boolean messageFlag=true;
+    static boolean messageFlag=false;
     /**
      * @param args the command line arguments
      */
@@ -56,7 +57,7 @@ public class Monitor3 {
 
         rpio = new RPI_IO();
         data = new RPI_IO_DATA();
-        intrusion = new Intrusion(rpio);
+        intrusion = new IntrusionAlarm(rpio);
         lights = new ExteriorLights(rpio);
         aircondition = new AirCondition(rpio);
         energy = new Energy(rpio);
@@ -132,13 +133,18 @@ public class Monitor3 {
                     subject = message.getSubject();
                     request = getRequest(subject);
                     message.setReply();
-                    
+                    if(request.equalsIgnoreCase("comando invalido")){
+                        rd3email.sendEmail(message, request);
+                    }else {
                     String[] parts = request.split("/");
                     if (parts[1].equalsIgnoreCase("home")) {
-                        rd3email.sendEmailAttach(message, "Temperature Log Data File ", request);
+                        String text=message.getActualDate()+"\n";
+                        text=text+subject+" File attached";
+                        rd3email.sendEmailAttach(message, text, request);
                     } else {
                         rd3email.sendEmail(message, request);
                     }
+                }
                     emailList.clear();
 
                 }
@@ -156,7 +162,7 @@ public class Monitor3 {
     public static String getRequest(String subject) throws FileNotFoundException, UnsupportedEncodingException{
         
         String request=message.getActualDate()+"\n";
-        request=request+"Monitor3 Version 1.3\n\n";
+        request=request+"Monitor3 Version 1.31\n\n";
         subject=subject.toLowerCase();
         
         switch(subject){
@@ -200,18 +206,12 @@ public class Monitor3 {
                 reset.shutDownCommand();
                 break;
                 
-            case "alarm off": 
-                intrusion.setEmail_flag(false);
-                request=request+"Door alarm disabled.";
+            case "reset intrusion alarm": 
+                request=request+intrusion.resetAlarm();
                 break;
-                
-            case "alarm on":
-                intrusion.setEmail_flag(true);
-                request=request+"Door alarm enabled.";
-                break;
-                
+                                       
             case "version":
-                request="Monitor3 version 1.3";
+                request="Monitor3 version 1.31";
                 break;
             
             case "reset power":
@@ -230,8 +230,12 @@ public class Monitor3 {
                 request=aircondition.getLog60();
                 break;
                 
-            case "ac ack":
+            case "ack ac alarm":
                 request=aircondition.alarmAck();
+                break;
+                
+            case "energy log":
+                request=energy.getLog();
                 break;
                 
             default:

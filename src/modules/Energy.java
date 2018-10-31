@@ -10,7 +10,14 @@ import Comunicatioms.Gmail;
 import Comunicatioms.RD3mail;
 import Comunicatioms.WhatsappSender;
 import RPI_IO_Lib.RPI_IO;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -137,6 +144,28 @@ public class Energy {
         return report;
     }
     
+    private void logEvent(String event) throws IOException{
+        
+        //Check if file exists
+        File f=new File("power_log.txt");
+        if(!f.exists()){
+            f.createNewFile(); //Create file
+        } 
+        
+        try (FileWriter fw = new FileWriter("power_log.txt",true)) {
+            PrintWriter pw=new PrintWriter(fw);
+            pw.println(event);
+            pw.close();
+        }
+        
+    }
+    public String getDate() {
+        Date dNow = new Date();
+        SimpleDateFormat ft
+                = new SimpleDateFormat("dd/MM/yyyy 'at' HH:mm:ss");
+        String actualDate=ft.format(dNow);
+        return actualDate;
+    }
     /**
      * This method initializes the Input array list
      * @param inputs 
@@ -150,6 +179,11 @@ public class Energy {
         }
     }
     
+    public String getLog() throws FileNotFoundException, UnsupportedEncodingException{
+        String attach ="/home/pi/NetBeansProjects/Monitor3/power_log.txt";
+        
+        return attach;
+    }
     public void start(int timer){
         
         this.timer=timer;
@@ -170,8 +204,16 @@ public class Energy {
         }
         while(true){
             
-            checkMains();
-            checkGen();
+               try {
+                   checkMains();
+               } catch (IOException ex) {
+                   Logger.getLogger(Energy.class.getName()).log(Level.SEVERE, null, ex);
+               }
+               try {
+                   checkGen();
+               } catch (IOException ex) {
+                   Logger.getLogger(Energy.class.getName()).log(Level.SEVERE, null, ex);
+               }
             checkSurge();
             try {
                 Thread.sleep(timer);
@@ -183,7 +225,7 @@ public class Energy {
     
     }
     
-     private void checkMains(){
+     private void checkMains() throws IOException{
         
         switch(mainState){
             case 0:
@@ -191,8 +233,9 @@ public class Energy {
                     mainState=1;
                     mains_start_time=System.currentTimeMillis();
                     mains_loss_counter++;
-                    String message=email.getActualDate();
-                    message=message+"\nMain Power Supply OFF";
+                    String message=getDate();
+                    message=message+" Mains Power OFF";
+                    logEvent(message);
                     System.out.println(message);
                     if(this.email_flag){
                       //  rd3email.sendEmail(email, message);
@@ -208,8 +251,9 @@ public class Energy {
             case 1:
                 if(rpio.getInput(inputList[0])){
                     mainState=0;
-                    String message=email.getActualDate();
-                    message=message+"\nMain Power Supply ON";
+                    String message=getDate();
+                    message=message+" Mains Power ON";
+                    logEvent(message);
                     System.out.println(message);
                     if(this.email_flag){
                      //   rd3email.sendEmail(email, message);
@@ -228,15 +272,16 @@ public class Energy {
     
     }
     
-    private void checkGen() {
+    private void checkGen() throws IOException {
         switch (genState) {
             case 0:
                 if (rpio.getInput(inputList[1])) {
                     genState = 1;
                     gen_start_time=System.currentTimeMillis();
                     gen_start_counter++;
-                    String message = email.getActualDate();
-                    message = message + "\nGenerator Supply ON";
+                    String message = getDate();
+                    message = message + " Generator ON";
+                    logEvent(message);
                     rpio.setRly(1);
                     System.out.println(message);
                     if(this.email_flag){
@@ -254,9 +299,10 @@ public class Energy {
                 if (!rpio.getInput(inputList[1])) {
                     genState = 0;
                     
-                    String message = email.getActualDate();
-                    message = message + "\nGenerator Supply OFF";
+                    String message = getDate();
+                    message = message + " Generator OFF";
                     System.out.println(message);
+                    logEvent(message);
                     rpio.resetRly(1);
                     if(this.email_flag){
                      //   rd3email.sendEmail(email, message);
