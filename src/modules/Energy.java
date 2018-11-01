@@ -147,12 +147,12 @@ public class Energy {
     private void logEvent(String event) throws IOException{
         
         //Check if file exists
-        File f=new File("power_log.txt");
+        File f=new File("/home/pi/NetBeansProjects/Monitor3/power_log.txt");
         if(!f.exists()){
             f.createNewFile(); //Create file
         } 
         
-        try (FileWriter fw = new FileWriter("power_log.txt",true)) {
+        try (FileWriter fw = new FileWriter("/home/pi/NetBeansProjects/Monitor3/power_log.txt",true)) {
             PrintWriter pw=new PrintWriter(fw);
             pw.println(event);
             pw.close();

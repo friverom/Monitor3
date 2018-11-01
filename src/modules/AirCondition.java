@@ -268,7 +268,7 @@ public class AirCondition {
     }
     
     private void createAClog() throws FileNotFoundException, UnsupportedEncodingException{
-        PrintWriter writer = new PrintWriter("ac_log.txt", "UTF-8");
+        PrintWriter writer = new PrintWriter("/home/pi/NetBeansProjects/Monitor3/ac_log.txt", "UTF-8");
         writer.println("Running hours,"+ac1_timer+","+ac2_timer+","+System.currentTimeMillis()+"\n");
         writer.close();
     }
@@ -281,7 +281,7 @@ public class AirCondition {
         log[2]=0;
         
         try {
-            scanner = new Scanner(new File("ac_log.txt"));
+            scanner = new Scanner(new File("/home/pi/NetBeansProjects/Monitor3/ac_log.txt"));
             String text = scanner.useDelimiter("\n").next();
             scanner.close(); // Put this call in a finally block
 
@@ -294,7 +294,7 @@ public class AirCondition {
         } catch (FileNotFoundException ex) {
             PrintWriter writer;
             try {
-                writer = new PrintWriter("ac_log.txt", "UTF-8");
+                writer = new PrintWriter("/home/pi/NetBeansProjects/Monitor3/ac_log.txt", "UTF-8");
                 writer.println("Running hours," + 0 + "," + 0 + ","+System.currentTimeMillis()+"\n");
                 writer.close();
             } catch (FileNotFoundException ex1) {
@@ -345,6 +345,9 @@ public class AirCondition {
         data.email.setTo("federico.rivero.m@gmail.com");
         data.email.setSubject("SVMI. Radar Station Air Condition");*/
         nextDate=schedule.calcScheduleTime();
+        if(ac1_timer > ac2_timer){
+            state=1;
+        }
         while (true) {
             processTemp();
             alarm_flag=checkTempAlarm();
@@ -422,6 +425,7 @@ public class AirCondition {
                 }
                 ac1_timer=ac1_timer+System.currentTimeMillis()-ac_last;
                 ac_last=System.currentTimeMillis();
+                setAirCondition(1);
                 break;
             //State 1. System in Auto an AC#2 running. No alarm    
             case 1:
@@ -464,6 +468,7 @@ public class AirCondition {
                 }
                 ac2_timer=ac2_timer+System.currentTimeMillis()-ac_last;
                 ac_last=System.currentTimeMillis();
+                setAirCondition(2);
                 break;
             //AC #1 in alarm. AC #2 running. No reset signal    
             case 2:
@@ -488,7 +493,7 @@ public class AirCondition {
                 }
                 ac2_timer=ac2_timer+System.currentTimeMillis()-ac_last;
                 ac_last=System.currentTimeMillis();
-               
+                setAirCondition(2);
                 break;
                 
             case 3:
@@ -513,6 +518,7 @@ public class AirCondition {
                 }
                 ac1_timer=ac1_timer+System.currentTimeMillis()-ac_last;
                 ac_last=System.currentTimeMillis();
+                setAirCondition(1);
                 break;
             default:
         }
