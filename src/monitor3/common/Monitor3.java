@@ -45,11 +45,11 @@ public class Monitor3 {
     static AirCondition aircondition = null;
     static Energy energy = null;
     static ResetPi reset = null;
-    //static RD3mail rd3email = new RD3mail("svmi.radar@adr3group.com", "$radar.2018*");
-    static RD3mail rd3email = new RD3mail("test.adr3@adr3group.com", "$test.2018*");            
+    static RD3mail rd3email = new RD3mail("svmi.radar@adr3group.com", "$radar.2018*");
+   // static RD3mail rd3email = new RD3mail("test.adr3@adr3group.com", "$test.2018*");            
     static EmailMessage message = new EmailMessage();
     static ArrayList<EmailMessage> emailList = new ArrayList<EmailMessage>();
-    static boolean messageFlag=false;
+    static boolean messageFlag=true;
     /**
      * @param args the command line arguments
      */
@@ -152,7 +152,7 @@ public class Monitor3 {
             }
 
             try {
-                Thread.sleep(5000);
+                Thread.sleep(30000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Monitor3.class.getName()).log(Level.SEVERE, null, ex);
             }

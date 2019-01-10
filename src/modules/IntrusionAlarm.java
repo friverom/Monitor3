@@ -113,10 +113,10 @@ public class IntrusionAlarm {
             report=report+"Generator Room Door: CLOSE\n";
         }
         
-        if(email_flag){
-            report=report+"Alarm ENABLE\n";
+        if(state==0){
+            report=report+"Alarm ARMED\n";
         } else {
-            report=report+"Alarm DISABLE\n";
+            report=report+"Alarm ACTIVATED\n";
         }
         
         return report;
